@@ -16,13 +16,10 @@ context('Misc', () => {
     // https://on.cypress/io/platform
     cy.log(`Platform ${Cypress.platform} architecture ${Cypress.arch}`)
 
-    // on CircleCI Windows build machines we have a failure to run bash shell
-    // https://github.com/cypress-io/cypress/issues/5169
-    // so skip some of the tests by passing flag "--env circle=true"
-    const isCircleOnWindows = Cypress.platform === 'win32' && Cypress.env('circle')
-
-    if (isCircleOnWindows) {
-      cy.log('Skipping test on CircleCI')
+    // Some Windows environments block child processes started by Cypress.
+    // The CI workflow runs on Linux, where this command is still validated.
+    if (Cypress.platform === 'win32') {
+      cy.log('Skipping cy.exec() test on Windows')
 
       return
     }
@@ -40,17 +37,11 @@ context('Misc', () => {
     cy.exec('echo Jane Lane')
       .its('stdout').should('contain', 'Jane Lane')
 
-    if (Cypress.platform === 'win32') {
-      cy.exec(`print ${Cypress.config('configFile')}`)
-        .its('stderr').should('be.empty')
-    }
-    else {
-      cy.exec(`cat ${Cypress.config('configFile')}`)
-        .its('stderr').should('be.empty')
+    cy.exec(`cat ${Cypress.config('configFile')}`)
+      .its('stderr').should('be.empty')
 
-      cy.exec('pwd')
-        .its('code').should('eq', 0)
-    }
+    cy.exec('pwd')
+      .its('code').should('eq', 0)
   })
 
   it('cy.focused() - get the DOM element that has focus', () => {
