@@ -4,22 +4,22 @@
   "description": "Projeto simples para aulas de CI-CD",
   "main": "index.js",
   "scripts": {
-    "test": "npx cypress run --browser chrome",
+    "test": "cypress run",
     "report": "npx allure open allure-results",
     "report:generate": "npx allure generate allure-results --output allure-report"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EBAC-QE/ci-cd-teste-exemplo.git"
+    "url": "git+https://github.com/sabinemetzner/ci-cd-teste-exemplo.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/EBAC-QE/ci-cd-teste-exemplo/issues"
+    "url": "https://github.com/sabinemetzner/ci-cd-teste-exemplo/issues"
   },
-  "homepage": "https://github.com/EBAC-QE/ci-cd-teste-exemplo#readme",
+  "homepage": "https://github.com/sabinemetzner/ci-cd-teste-exemplo#readme",
   "dependencies": {
     "allure-commandline": "^2.43.0",
     "cypress": "^14.5.4"
