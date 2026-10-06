@@ -53,7 +53,7 @@ adicione no repositorio um webhook apontando para:
 O pipeline possui os estagios:
 
 1. Preparacao do ambiente
-2. Instalacao das dependencias com `npm ci`
+2. Instalacao das dependencias com `npm ci --no-audit`
 3. Execucao dos testes automatizados com `npm test`
 
 Os arquivos de resultado do Allure sao arquivados ao final de cada build.

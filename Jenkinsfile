@@ -32,7 +32,7 @@ pipeline {
     stage('Instalacao das dependencias') {
       steps {
         script {
-          runCommand('npm ci')
+          runCommand('npm ci --no-audit')
         }
       }
     }
