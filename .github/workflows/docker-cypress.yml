@@ -1,0 +1,63 @@
+name: Docker - Testes Cypress
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  testes-no-container:
+    name: Build e testes no Docker
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Baixar o repositorio
+        uses: actions/checkout@v4
+
+      - name: Construir a imagem Docker
+        run: docker build --tag ci-cd-cypress:${{ github.sha }} .
+
+      - name: Executar os testes Cypress no container
+        id: testes
+        shell: bash
+        run: |
+          mkdir -p evidencias/allure-results evidencias/screenshots
+
+          set +e
+          docker run --name cypress-execucao \
+            --volume "${{ github.workspace }}/evidencias/allure-results:/e2e/allure-results" \
+            --volume "${{ github.workspace }}/evidencias/screenshots:/e2e/cypress/screenshots" \
+            ci-cd-cypress:${{ github.sha }} 2>&1 | tee evidencias/docker-test.log
+          test_status=${PIPESTATUS[0]}
+          set -e
+
+          docker rm cypress-execucao
+          echo "exit_code=${test_status}" >> "$GITHUB_OUTPUT"
+          exit "${test_status}"
+
+      - name: Resumo da execucao
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Testes Cypress executados via Docker"
+            echo
+            echo "- Imagem: \`ci-cd-cypress:${{ github.sha }}\`"
+            echo "- Codigo de saida: \`${{ steps.testes.outputs.exit_code || 'nao disponivel' }}\`"
+            echo "- Logs e resultados: artefato \`evidencias-docker-cypress\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Salvar logs e resultados como evidencia
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencias-docker-cypress
+          path: evidencias/
+          if-no-files-found: warn
+          retention-days: 30
